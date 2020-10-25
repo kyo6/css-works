@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iPhone SE Rotation</title>
+    <style>
+      body {
+        margin: 0;
+        background-color: #131313;
+      }
+
+      body.loaded {
+        height: 5000px;
+      }
+      #sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      canvas {
+        position: relative;
+        margin-top: -100px;
+      }
+
+      .loading {
+        display: none;
+      }
+
+      .left,
+      .right {
+        font-size: 28px;
+        color: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        position: absolute;
+        top: 45%;
+        opacity: 0;
+      }
+
+      .left {
+        left: 50%;
+      }
+      .right {
+        right: 50%;
+      }
+    </style>
+    <script src="../js/PxLoader.js"></script>
+    <script src="../js/PxLoaderImage.js"></script>
+  </head>
+  <body>
+    <div id="sticky">
+      <canvas id="iphone-se" width="432" height="976"></canvas>
+      <div class="loading">
+        <p>
+          iPhone SE packs our most powerful chip into our most popular size at
+          our most affordable price. It’s just what you’ve been waiting for.
+        </p>
+      </div>
+      <p class="left">Durable glass and<br />aluminum design</p>
+
+      <p class="right">Brilliant 4.7”<br />Retina HD<br />display</p>
+    </div>
+    <script>
+      const $ = (el) => document.querySelector(el)
+      $('#iphone-se').style.height = window.outerHeight + 'px'
+
+      window.addEventListener('scroll', (e) => {
+        let scrolled =
+          window.scrollY /
+          (document.documentElement.scrollHeight -
+            document.documentElement.clientHeight)
+        let frame = Math.ceil(scrolled * 84)
+        changeFrame(frame)
+        moveToDevice($('#iphone-se'), scrolled, 0.3, 0.6, 0.6, 1);
+        showHideText($('.left'), scrolled, 0.45, 0.52, 0.58, 0.65)
+        showHideText($('.right'), scrolled, 0.9, 1)
+      })
+
+      const loader = new PxLoader()
+      const images = []
+      for (let i = 0; i < 85; i++) {
+        images[i] = loader.addImage(
+          `https://s3-us-west-2.amazonaws.com/s.cdpn.io/2002878/iphone-se.${(
+            '0' +
+            (i + 1)
+          ).slice(-2)}.png`
+        )
+      }
+      loader.addCompletionListener(function () {
+        let context = $('#iphone-se').getContext('2d')
+        document.body.classList.add('loaded')
+        context.drawImage(images[0], 0, 0, 432, 976)
+      })
+
+      loader.start()
+
+      function changeFrame(index) {
+        if (index < 0) index = 0
+        if (index > 84) index = 84
+        let context = $('#iphone-se').getContext('2d')
+        context.drawImage(images[index], 0, 0, 432, 976)
+      }
+
+      function moveToDevice(
+        el,
+        current,
+        toLeftFrom,
+        toLeftTo,
+        toRightFrom,
+        toRightTo
+      ) {
+        if (current <= toLeftTo) {
+          console.log(current, toLeftTo)
+          if (current >= toLeftFrom) {
+            let offsetRatio = (current - toLeftFrom) / (toLeftTo - toLeftFrom)
+            console.log((el.clientWidth / 2) * -1 * offsetRatio + 'px')
+            console.log((el.clientWidth / 2) * -1 * offsetRatio + 'px')
+            el.style.left = (el.clientWidth / 2) * -1 * offsetRatio + 'px'
+          }
+        } else {
+          let offsetRatio = (current - toRightFrom) / (toRightTo - toRightFrom)
+          el.style.left =
+            (el.clientWidth / 2) * -1 + el.clientWidth * offsetRatio + 'px'
+        }
+      }
+
+      function showHideText(el, current, showFrom, showTo, hideFrom, hideTo) {
+        if (current < showFrom) {
+          el.style.opacity = 0
+        }
+        if (current >= showFrom && current <= showTo) {
+          el.style.opacity = (current - showFrom) / (showFrom - showTo)
+        }
+        if (typeof hideFrom !== 'undefined' && typeof hideTo !== 'undefined') {
+          if (current > hideFrom && current <= hideTo) {
+            el.style.opacity = (hideTo - current) / (hideTo - hideFrom)
+          }
+          if (current > hideTo) {
+            el.style.opacity = 0
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -42,6 +42,7 @@
         transform: translate(-50%, -50%);
         width: 100px;
         height: 100px;
+        /* 使用box-shadow 遮住背景图片 */
         box-shadow: 0 0 0 100vw #000, 0 0 0 30px #000 inset;
         min-width: 100px;
         min-height: 100px;
@@ -110,11 +111,13 @@
       let $theChip = document.querySelector('#the-chip')
       let $A13 = document.querySelector('#A13')
       let $A13TextBg = document.querySelector('#the-chip .text-bg')
+      // 在滚动的过程中chip 大小不断变大
       $theChip.style.width = $theChip.style.height =
         document.documentElement.clientWidth *
           20 *
           (scrolled * scrolled * scrolled) +
         'px'
+
       // 标题向上移动并慢慢隐藏
       if (scrolled <= 0.1) {
         $h1.style.opacity = (0.1 - scrolled) / 0.1
@@ -122,6 +125,7 @@
       } else {
         $h1.style.opacity = 0
       }
+      
       // 滚动过程中慢慢显示chip
       if (scrolled <= 0.2) {
         $A13.style.opacity = (scrolled - 0.1) / 0.1
